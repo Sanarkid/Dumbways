@@ -1,0 +1,12 @@
+.a {
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+}
+
+.a:hover {
+  color: rgb(136, 136, 136);
+}
+
+i {
+  font-size: 34px;
+}
