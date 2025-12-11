@@ -7,6 +7,7 @@ if (!contents) {
 
 // --- Card Maker Function ---
 function cardMaker({
+  id,
   imageUrl,
   title,
   description,
@@ -37,16 +38,20 @@ function cardMaker({
     language || "N/A"
   }`;
 
-  const button = document.createElement("button");
-  button.className = "btn btn-dark px-5 py-1 mt-auto align-self-center";
-  button.textContent = "Lihat Detail";
+  // Bungkus tombol dalam btn-group
+  const buttonGroup = document.createElement("div");
+  buttonGroup.className = "btn-group mt-auto d-flex justify-content-center";
 
-  // Event klik tombol
-  button.addEventListener("click", () => {
-    // Simpan data proyek ke localStorage sementara
+  // Tombol detail
+  const buttonDetail = document.createElement("button");
+  buttonDetail.className = "btn btn-dark";
+  buttonDetail.textContent = "Detail";
+
+  buttonDetail.addEventListener("click", () => {
     localStorage.setItem(
       "selectedProject",
       JSON.stringify({
+        id,
         imageUrl,
         title,
         description,
@@ -55,36 +60,73 @@ function cardMaker({
         language,
       })
     );
-
-    // Arahkan ke halaman detail
     window.location.href = "details.html";
   });
 
+  // Tombol edit
+  const buttonEdit = document.createElement("button");
+  buttonEdit.className = "btn btn-light border-dark";
+  buttonEdit.textContent = "Edit";
+
+  // Event listener untuk tombol edit
+  buttonEdit.addEventListener("click", () => {
+    localStorage.setItem("editingProjectId", id);
+    window.location.href = "edit.html";
+  });
+
+  // Tombol hapus
+  const buttonDelete = document.createElement("button");
+  buttonDelete.className = "btn btn-dark";
+  buttonDelete.textContent = "Hapus";
+
+  // Event listener untuk tombol hapus
+  buttonDelete.addEventListener("click", () => {
+    // Ambil semua project dari localStorage
+    let projects = JSON.parse(localStorage.getItem("project")) || [];
+
+    // Filter project yang bukan dengan id ini
+    projects = projects.filter((p) => p.id !== id);
+
+    // Simpan kembali ke localStorage
+    localStorage.setItem("project", JSON.stringify(projects));
+
+    // Hapus card dari tampilan
+    card.remove();
+  });
+
+  // Masukkan tombol ke dalam group
+  buttonGroup.appendChild(buttonDetail);
+  buttonGroup.appendChild(buttonEdit);
+  buttonGroup.appendChild(buttonDelete);
+
+  // Tambahkan group ke card
   card.appendChild(image);
   card.appendChild(h4);
   card.appendChild(pDesc);
   card.appendChild(meta);
-  card.appendChild(button);
+  card.appendChild(buttonGroup);
 
   if (contents) contents.append(card);
 }
 
-// --- Render projects from localStorage on page load ---
+// --- Load proyek pada local storage ---
 document.addEventListener("DOMContentLoaded", () => {
   const projects = JSON.parse(localStorage.getItem("project")) || [];
-  projects.forEach((project) => {
+
+  projects.map((project) =>
     cardMaker({
+      id: project.id,
       imageUrl: project.imageUrl,
       title: project.subject,
       description: project.description,
       startDate: project.startDate,
       endDate: project.endDate,
       language: project.language,
-    });
-  });
+    })
+  );
 });
 
-// --- Handle form submission ---
+// --- Handler form submission ---
 submitAction.addEventListener("submit", function (e) {
   e.preventDefault();
 
@@ -102,8 +144,9 @@ submitAction.addEventListener("submit", function (e) {
     reader.onload = function (e) {
       const imageDataUrl = e.target.result; //
 
-      // Render card immediately
+      // Render card
       cardMaker({
+        id: Date.now(),
         imageUrl: imageDataUrl,
         title: formSubject,
         description: formDescription,
@@ -112,7 +155,7 @@ submitAction.addEventListener("submit", function (e) {
         language: formLanguage,
       });
 
-      // Save project into localStorage
+      // Save project ke localStorage
       const newProject = {
         id: Date.now(),
         subject: formSubject,
@@ -131,7 +174,7 @@ submitAction.addEventListener("submit", function (e) {
     };
     reader.readAsDataURL(imageUploaded);
   } else {
-    // If no image uploaded, still save project
+    // jika tak ada gambar, pakai placeholder
     const newProject = {
       id: Date.now(),
       subject: formSubject,
