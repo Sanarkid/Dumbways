@@ -1,0 +1,25 @@
+.a {
+  color: rgb(255, 255, 255);
+  text-decoration: none;
+}
+
+.a:hover {
+  color: rgb(136, 136, 136);
+}
+
+i {
+  font-size: 34px;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* jumlah baris */
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fixbox {
+  width: 310px;
+}
