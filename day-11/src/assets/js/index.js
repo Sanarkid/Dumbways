@@ -80,17 +80,16 @@ function cardMaker({
   buttonDelete.textContent = "Hapus";
 
   // Event listener untuk tombol hapus
-  buttonDelete.addEventListener("click", () => {
-    // Ambil semua project dari localStorage
-    let projects = JSON.parse(localStorage.getItem("project")) || [];
+  buttonDelete.addEventListener("click", async () => {
+    const confirmDelete = confirm(
+      "Are you sure you want to delete this project?"
+    );
+    if (!confirmDelete) return;
 
-    // Filter project yang bukan dengan id ini
-    projects = projects.filter((p) => p.id !== id);
+    await fetch(`/api/projects/${id}`, {
+      method: "DELETE",
+    });
 
-    // Simpan kembali ke localStorage
-    localStorage.setItem("project", JSON.stringify(projects));
-
-    // Hapus card dari tampilan
     card.remove();
   });
 
@@ -111,37 +110,38 @@ function cardMaker({
 
 // --- Load proyek pada local storage ---
 document.addEventListener("DOMContentLoaded", async () => {
-  // 1. Fetch dummy data from Express
-  let dummyProjects = [];
   try {
     const res = await fetch("/api/projects");
-    dummyProjects = await res.json();
+    const projects = await res.json();
+
+    projects.forEach((project) =>
+      cardMaker({
+        id: project.id,
+        imageUrl: project.image_url,
+        title: project.title,
+        description: project.description,
+        startDate: formatDate(project.start_date),
+        endDate: formatDate(project.end_date),
+        language: project.language,
+      })
+    );
   } catch (err) {
-    console.error("Failed to fetch dummy projects:", err);
+    console.error("Failed to load projects:", err);
   }
-
-  // 2. Load projects from localStorage
-  const localProjects = JSON.parse(localStorage.getItem("project")) || [];
-
-  // 3. Merge them (dummy first, then local)
-  const allProjects = [...dummyProjects, ...localProjects];
-
-  // 4. Render cards
-  allProjects.forEach((project) =>
-    cardMaker({
-      id: project.id,
-      imageUrl: project.imageUrl,
-      title: project.subject,
-      description: project.description,
-      startDate: project.startDate,
-      endDate: project.endDate,
-      language: project.language,
-    })
-  );
 });
 
+// --- Format Tanggal ---
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 // --- Handler form submission ---
-submitAction.addEventListener("submit", function (e) {
+submitAction.addEventListener("submit", async function (e) {
   e.preventDefault();
 
   const formSubject = document.getElementById("formSubject")?.value;
@@ -150,29 +150,15 @@ submitAction.addEventListener("submit", function (e) {
   const formLanguage = document.getElementById("formLanguage")?.value;
   const formDescription = document.getElementById("formDescription")?.value;
   const formFile = document.getElementById("formFile");
-  const imageUploaded =
-    formFile && formFile.files[0] ? formFile.files[0] : null;
-
+  const imageUploaded = formFile?.files[0] || null;
+  // Jika ada gambar yang diunggah
   if (imageUploaded) {
     const reader = new FileReader();
-    reader.onload = function (e) {
-      const imageDataUrl = e.target.result; //
+    reader.onload = async function (e) {
+      const imageDataUrl = e.target.result;
 
-      // Render card
-      cardMaker({
-        id: Date.now(),
-        imageUrl: imageDataUrl,
-        title: formSubject,
-        description: formDescription,
-        startDate: formStartDate,
-        endDate: formEndDate,
-        language: formLanguage,
-      });
-
-      // Save project ke localStorage
       const newProject = {
-        id: Date.now(),
-        subject: formSubject,
+        title: formSubject,
         startDate: formStartDate,
         endDate: formEndDate,
         language: formLanguage,
@@ -180,18 +166,33 @@ submitAction.addEventListener("submit", function (e) {
         imageUrl: imageDataUrl,
       };
 
-      let project = JSON.parse(localStorage.getItem("project")) || [];
-      project.push(newProject);
-      localStorage.setItem("project", JSON.stringify(project));
+      const res = await fetch("/api/projects", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProject),
+      });
+
+      const saved = await res.json();
+
+      cardMaker({
+        id: saved.id,
+        imageUrl: saved.image_url,
+        title: saved.title,
+        description: saved.description,
+        startDate: formatDate(saved.start_date),
+        endDate: formatDate(saved.end_date),
+        language: saved.language,
+      });
 
       submitAction.reset();
     };
+
     reader.readAsDataURL(imageUploaded);
-  } else {
-    // jika tak ada gambar, pakai placeholder
+  }
+  // Jika tidak ada gambar yang diunggah
+  else {
     const newProject = {
-      id: Date.now(),
-      subject: formSubject,
+      title: formSubject,
       startDate: formStartDate,
       endDate: formEndDate,
       language: formLanguage,
@@ -199,13 +200,24 @@ submitAction.addEventListener("submit", function (e) {
       imageUrl: null,
     };
 
-    cardMaker(newProject);
+    const res = await fetch("/api/projects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newProject),
+    });
 
-    let project = JSON.parse(localStorage.getItem("project")) || [];
-    project.push(newProject);
-    localStorage.setItem("project", JSON.stringify(project));
+    const saved = await res.json();
 
-    console.table(newProject);
+    cardMaker({
+      id: saved.id,
+      imageUrl: saved.image_url,
+      title: saved.title,
+      description: saved.description,
+      startDate: formatDate(saved.start_date),
+      endDate: formatDate(saved.end_date),
+      language: saved.language,
+    });
+
     submitAction.reset();
   }
 });
