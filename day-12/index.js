@@ -59,6 +59,71 @@ app.delete("/api/projects/:id", async (req, res) => {
   }
 });
 
+// API untuk register akun
+const bcrypt = require("bcrypt");
+
+app.post("/api/register", async (req, res) => {
+  const { username, email, password } = req.body;
+
+  try {
+    //hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      `INSERT INTO users (username, email, password, createdat)
+      VALUES ($1, $2, $3, NOW()) RETURNING *`,
+      [username, email, hashedPassword]
+    );
+    res.json(result.rows[0]); //kirim kembali user yang baru
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+// API untuk login akun
+app.post("/api/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    //cari username di database
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
+
+    if (result.rows.length === 0) {
+      return res.status(400).send("Username tidak ditemukan");
+    }
+
+    const user = result.rows[0];
+    // bandingkan password dari login dengan database
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(400).send("Password Salah");
+    }
+
+    // Login Sukses
+    res.json({
+      message: "Login Sukses",
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.get("/login", (req, res) => {
+  res.render("login");
+});
+
+app.get("/register", (req, res) => {
+  res.render("register");
+});
+
 app.get("/home", (req, res) => {
   res.render("index");
 });
