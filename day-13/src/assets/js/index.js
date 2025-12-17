@@ -48,18 +48,6 @@ function cardMaker({
   buttonDetail.textContent = "Detail";
 
   buttonDetail.addEventListener("click", () => {
-    localStorage.setItem(
-      "selectedProject",
-      JSON.stringify({
-        id,
-        imageUrl,
-        title,
-        description,
-        startDate,
-        endDate,
-        language,
-      })
-    );
     window.location.href = `details?id=${id}`;
   });
 
@@ -70,7 +58,6 @@ function cardMaker({
 
   // Event listener untuk tombol edit
   buttonEdit.addEventListener("click", () => {
-    localStorage.setItem("editingProjectId", id);
     window.location.href = `edit?id=${id}`;
   });
 

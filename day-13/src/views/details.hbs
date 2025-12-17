@@ -27,7 +27,6 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
-    <script src="../assets/js/auth.js"></script>
   </head>
 
   <body>
@@ -59,15 +58,7 @@
     ></div>
     <!-- CARD -->
     <!-- JAVASCRIPT -->
-    <script>
-      document.addEventListener("DOMContentLoaded", () => { const project =
-      JSON.parse(localStorage.getItem("selectedProject")); if (project) { const
-      detailDiv = document.getElementById("details"); detailDiv.innerHTML = `
-      <img src="${ project.imageUrl || "https://via.placeholder.com/400x200" }"
-      alt="${project.title}"> <h2 class="text-center pt-3">${project.title}</h2>
-      <p>${project.description}</p> <p>From: ${project.startDate} To:
-      ${project.endDate}</p> <p>Language: ${project.language}</p> `; } });
-    </script>
+    <script src="../assets/js/details.js"></script>
     <!-- JAVASCRIPT -->
   </body>
 </html>

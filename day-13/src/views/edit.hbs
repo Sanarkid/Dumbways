@@ -27,7 +27,6 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
-    <script src="../assets/js/auth.js"></script>
   </head>
 
   <body>
@@ -84,33 +83,19 @@
       </div>
       <div class="mb-3">
         <label class="form-label">Upload Image</label>
-        <input type="file" class="form-control" id="formFile" />
+        <input
+          type="file"
+          class="form-control"
+          id="formFile"
+          accept="image/*"
+        />
       </div>
       <img id="previewImage" class="img-fluid mt-3" />
 
       <button type="submit" class="btn btn-light">Save Changes</button>
     </form>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", async () => { // Get ID from
-      URL or localStorage const params = new
-      URLSearchParams(window.location.search); const editingId =
-      params.get("id") || localStorage.getItem("editingProjectId"); let project
-      = null; // 1. Try localStorage const projects =
-      JSON.parse(localStorage.getItem("project")) || []; project =
-      projects.find(p => p.id == editingId); // 2. If not found, fetch from
-      dummy API if (!project) { try { const res = await
-      fetch(`/api/projects/${editingId}`); if (res.ok) { project = await
-      res.json(); } } catch (err) { console.error("Failed to fetch dummy
-      project:", err); } } // 3. Fill the form if project found if (project) {
-      document.getElementById("formSubject").value = project.subject;
-      document.getElementById("formStartDate").value = project.startDate;
-      document.getElementById("formEndDate").value = project.endDate;
-      document.getElementById("formLanguage").value = project.language;
-      document.getElementById("formDescription").value = project.description;
-      document.getElementById("previewImage").src = project.imageUrl || ""; }
-      });
-    </script>
+    <script src="../assets/js/edit.js"></script>
 
     <!-- JAVASCRIPT -->
   </body>
