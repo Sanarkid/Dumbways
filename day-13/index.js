@@ -16,6 +16,26 @@ const pool = new Pool({
   port: 5432,
 });
 
+// menambahkan middleware dengan express-session
+const session = require("express-session");
+
+app.use(
+  session({
+    secret: "supersecretkey",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 },
+  })
+);
+
+// fungsi middleware
+function authMiddleware(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect("/login");
+  }
+  next();
+}
+
 // API untuk GET data proyek
 app.get("/api/projects", async (req, res) => {
   try {
@@ -28,11 +48,29 @@ app.get("/api/projects", async (req, res) => {
   }
 });
 
+// Multer untuk file gambar
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./src/uploads");
+  },
+  filename: function (req, file, cb) {
+    const uniqueName = Date.now() + "-" + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+
+// akses folder uploads
+const upload = multer({ storage });
+app.use("/uploads", express.static("./src/uploads"));
+
 // API untuk CREATE data proyek
 app.use(express.json());
-app.post("/api/projects", async (req, res) => {
-  const { title, startDate, endDate, language, description, imageUrl } =
-    req.body;
+app.post("/api/projects", upload.single("image"), async (req, res) => {
+  const { title, startDate, endDate, language, description } = req.body;
+
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
 
   try {
     const result = await pool.query(
@@ -43,6 +81,7 @@ app.post("/api/projects", async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).send(err.message);
   }
 });
@@ -103,17 +142,25 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Login Sukses
+    req.session.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+    };
+
     res.json({
       message: "Login Sukses",
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-      },
     });
   } catch (err) {
     res.status(500).send(err.message);
   }
+});
+
+// fungsi logout
+app.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/login");
+  });
 });
 
 app.get("/login", (req, res) => {
@@ -124,23 +171,23 @@ app.get("/register", (req, res) => {
   res.render("register");
 });
 
-app.get("/home", (req, res) => {
+app.get("/home", authMiddleware, (req, res) => {
   res.render("index");
 });
 
-app.get("/my-projects", (req, res) => {
+app.get("/my-projects", authMiddleware, (req, res) => {
   res.render("my-projects");
 });
 
-app.get("/contact", (req, res) => {
+app.get("/contact", authMiddleware, (req, res) => {
   res.render("form");
 });
 
-app.get("/details", (req, res) => {
+app.get("/details", authMiddleware, (req, res) => {
   res.render("details");
 });
 
-app.get("/edit", (req, res) => {
+app.get("/edit", authMiddleware, (req, res) => {
   res.render("edit");
 });
 

@@ -24,9 +24,6 @@ form.addEventListener("submit", async (e) => {
     const data = await res.json();
     alert("Login Sukses!");
 
-    // simpan info user di localstorage
-    localStorage.setItem("user", JSON.stringify(data.user));
-
     // lanjut ke homepage
     window.location.href = "home";
   } catch (err) {

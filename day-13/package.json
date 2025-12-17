@@ -1,5 +1,5 @@
 {
-  "name": "day-12",
+  "name": "day-13",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,9 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "express": "^5.2.1",
+    "express-session": "^1.18.2",
     "hbs": "^4.2.0",
+    "multer": "^2.0.2",
     "pg": "^8.16.3"
   },
   "devDependencies": {

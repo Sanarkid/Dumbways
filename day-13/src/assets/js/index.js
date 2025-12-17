@@ -108,7 +108,7 @@ function cardMaker({
   if (contents) contents.append(card);
 }
 
-// --- Load proyek pada local storage ---
+// --- Load proyek ---
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const res = await fetch("/api/projects");
@@ -144,81 +144,37 @@ function formatDate(dateString) {
 submitAction.addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const formSubject = document.getElementById("formSubject")?.value;
-  const formStartDate = document.getElementById("formStartDate")?.value;
-  const formEndDate = document.getElementById("formEndDate")?.value;
-  const formLanguage = document.getElementById("formLanguage")?.value;
-  const formDescription = document.getElementById("formDescription")?.value;
-  const formFile = document.getElementById("formFile");
-  const imageUploaded = formFile?.files[0] || null;
-  // Jika ada gambar yang diunggah
-  if (imageUploaded) {
-    const reader = new FileReader();
-    reader.onload = async function (e) {
-      const imageDataUrl = e.target.result;
+  const formData = new FormData();
+  formData.append("title", document.getElementById("formSubject").value);
+  formData.append("startDate", document.getElementById("formStartDate").value);
+  formData.append("endDate", document.getElementById("formEndDate").value);
+  formData.append("language", document.getElementById("formLanguage").value);
+  formData.append(
+    "description",
+    document.getElementById("formDescription").value
+  );
 
-      const newProject = {
-        title: formSubject,
-        startDate: formStartDate,
-        endDate: formEndDate,
-        language: formLanguage,
-        description: formDescription,
-        imageUrl: imageDataUrl,
-      };
-
-      const res = await fetch("/api/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newProject),
-      });
-
-      const saved = await res.json();
-
-      cardMaker({
-        id: saved.id,
-        imageUrl: saved.image_url,
-        title: saved.title,
-        description: saved.description,
-        startDate: formatDate(saved.start_date),
-        endDate: formatDate(saved.end_date),
-        language: saved.language,
-      });
-
-      submitAction.reset();
-    };
-
-    reader.readAsDataURL(imageUploaded);
+  const fileInput = document.getElementById("formFile");
+  if (fileInput.files[0]) {
+    formData.append("image", fileInput.files[0]); // IMPORTANT
   }
-  // Jika tidak ada gambar yang diunggah
-  else {
-    const newProject = {
-      title: formSubject,
-      startDate: formStartDate,
-      endDate: formEndDate,
-      language: formLanguage,
-      description: formDescription,
-      imageUrl: null,
-    };
 
-    const res = await fetch("/api/projects", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newProject),
-    });
+  const res = await fetch("/api/projects", {
+    method: "POST",
+    body: formData, // NO HEADERS!
+  });
 
-    const saved = await res.json();
+  const saved = await res.json();
 
-    cardMaker({
-      id: saved.id,
-      imageUrl: saved.image_url,
-      title: saved.title,
-      description: saved.description,
-      startDate: formatDate(saved.start_date),
-      endDate: formatDate(saved.end_date),
-      language: saved.language,
-    });
+  cardMaker({
+    id: saved.id,
+    imageUrl: saved.image_url,
+    title: saved.title,
+    description: saved.description,
+    startDate: formatDate(saved.start_date),
+    endDate: formatDate(saved.end_date),
+    language: saved.language,
+  });
 
-    submitAction.reset();
-  }
+  submitAction.reset();
 });
-

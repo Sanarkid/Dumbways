@@ -27,7 +27,6 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
-    <script src="../assets/js/auth.js"></script>
   </head>
 
   <body>
@@ -42,14 +41,14 @@
 
         <!-- Menu items beside the brand -->
         <div class="navbar-nav d-flex ms-3">
-          <a class="nav-link active me-3" href="home">Home</a>
-          <a class="nav-link me-3" href="my-projects">My Project</a>
+          <a class="nav-link me-3" href="home">Home</a>
+          <a class="nav-link active me-3" href="my-projects">My Project</a>
           <a class="nav-link" href="contact">Contact me</a>
         </div>
 
         <!-- Push logout button to the right -->
         <div class="ms-auto text-white">
-          <a href="login" id="logOut" class="btn btn-light">Log Out</a>
+          <a href="/logout" class="btn btn-light">Log Out</a>
         </div>
       </div>
     </nav>
@@ -66,7 +65,7 @@
       </div>
 
       <!-- FORM -->
-      <form id="addMyProject">
+      <form id="addMyProject" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="formSubject" class="form-label">Judul Project</label>
           <input
@@ -161,7 +160,6 @@
 
     <!-- Javascript -->
     <script src="../assets/js/index.js"></script>
-    <script src="../assets/js/logout.js"></script>
     <!-- Javascript -->
   </body>
 </html>

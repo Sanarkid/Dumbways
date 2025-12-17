@@ -27,7 +27,6 @@
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
       crossorigin="anonymous"
     ></script>
-    <script src="../assets/js/auth.js"></script>
   </head>
 
   <body>
@@ -49,7 +48,7 @@
 
         <!-- Push logout button to the right -->
         <div class="ms-auto text-white">
-          <a href="login" id="logOut" class="btn btn-light">Log Out</a>
+          <a href="/logout" class="btn btn-light">Log Out</a>
         </div>
       </div>
     </nav>
@@ -57,60 +56,56 @@
 
     <!-- CARD -->
     <section
-      class="card p-md-5 my-5 mx-auto bg-black text-white"
-      style="max-width: 700px"
+      class="card mx-auto my-5 bg-black text-white"
+      style="max-width: 1200px"
     >
-      <form>
-        <div class="mb-3">
-          <label for="formGroupExampleInput" class="form-label">Nama</label>
-          <input
-            type="text"
-            class="form-control"
-            id="formGroupExampleInput"
-            placeholder="Example input placeholder"
+      <div class="row g-0">
+        <div class="col-md-4">
+          <img
+            src="../assets/img/OIP.webp"
+            class="img-fluid rounded-start"
+            alt="..."
           />
         </div>
-        <div class="mb-3">
-          <label for="formGroupExampleInput2" class="form-label">Email</label>
-          <input
-            type="text"
-            class="form-control"
-            id="formGroupExampleInput2"
-            placeholder="Another input placeholder"
-          />
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">
+              This is a wider card with supporting text below as a natural
+              lead-in to additional content. This content is a little bit
+              longer.
+            </p>
+            <p class="card-text">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt
+              error officia, ex reiciendis unde laborum? Autem ipsam earum iure
+              vitae error distinctio, mollitia soluta, repudiandae iusto magni,
+              corrupti natus? Corporis!
+            </p>
+            <button type="button" class="btn btn-light">Go somewhere</button><span
+            > </span>
+            <a href="#" class="btn btn-link">Primary Link</a>
+          </div>
+          <div class="card-body mt-5">
+            <a
+              class="a"
+              href="http://www.facebook.com/login.php/"
+              target="_blank"
+            >
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a class="a" href="https://x.com/" target="_blank">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+            <a class="a" href="https://www.instagram.com" target="_blank">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a class="a" href="https://www.linkedin.com/login" target="_blank">
+              <i class="fa-brands fa-linkedin-in"></i>
+            </a>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="formGroupExampleInput3" class="form-label">Nomor HP</label>
-          <input
-            type="text"
-            id="formGroupExampleInput3"
-            class="form-control"
-            placeholder="Another input placeholder"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="Select" class="form-label">Pilihan dropdown</label>
-          <select id="Select" class="form-select">
-            <option>Pilihan dropdown 1</option>
-            <option>Pilihan dropdown 2</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label for="formGroupExampleInput3" class="form-label">Message</label>
-          <textarea
-            type="text"
-            id="formGroupExampleInput3"
-            class="form-control"
-            placeholder="Message with big box"
-            rows="3"
-          ></textarea>
-        </div>
-        <button type="submit" class="btn btn-light">Submit</button>
-      </form>
+      </div>
     </section>
     <!-- CARD -->
-    <!-- Javascript -->
-    <script src="../assets/js/logout.js"></script>
-    <!-- Javascript -->
   </body>
 </html>
